@@ -1,0 +1,7 @@
+1. change mac address for interface eth0:
+# ifconfig eth0 down
+# ifconfig eth0 hw ether <new mac addr>
+# ifconfig eth0 up
+
+
+2. 
