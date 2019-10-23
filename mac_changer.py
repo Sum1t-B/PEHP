@@ -2,10 +2,11 @@
 
 import subprocess
 import optparse
+import re
 
-# # Uncomment this block before using script
-# subprocess.call("date >> ~/Desktop/pehp/comdlog.txt", shell=True)
-# subprocess.call("ifconfig >> ~/Desktop/pehp/comdlog.txt", shell=True)
+# Uncomment this block before using script
+subprocess.call("date >> ~/Desktop/pehp/comdlog.txt", shell=True)
+subprocess.call("ifconfig >> ~/Desktop/pehp/comdlog.txt", shell=True)
 
 ################################
 ##########
@@ -32,14 +33,32 @@ def change_mac(interface,new_mac):
     # subprocess.call("ifconfig "+ interface+" hw ether " + new_mac, shell=True)
     # subprocess.call("ifconfig "+ interface+" up", shell=True)
 
-    # # Uncomment this block before using script
-    # ####################
-    # # Safer way of executing system commands while using user input
-    # subprocess.call(["ifconfig", interface,"down"])
-    # subprocess.call(["ifconfig", interface, "hw ether", new_mac])
-    # subprocess.call(["ifconfig", interface, "up"])
+    # Uncomment this block before using script
+    ####################
+    # Safer way of executing system commands while using user input
+    subprocess.call(["ifconfig", interface,"down"])
+    subprocess.call(["ifconfig", interface, "hw ether", new_mac])
+    subprocess.call(["ifconfig", interface, "up"])
 
+    # check if mac changed or not
+    current_mac = get_current_mac(interface)
+    if current_mac == new_mac:
+        print("[+] Mac address was successfully changed to "+ current_mac)
+    else:
+        print("[-] Mac address did not get changed.")
 
+def get_current_mac(interface):
+    ifconfig_result = subprocess.check_output(["ifconfig", interface])
+    # regex can be created at pythex.org
+    mac_address_search_result = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_result)
+    if mac_address_search_result:
+        return mac_address_search_result.group(0)
+    else:
+        print("[-] Could not read Mac address.")
 
 options = get_arguments()
+
+current_mac = get_current_mac(options.interface)
+print("Current Mac = " + str(current_mac))
+
 change_mac(options.interface, options.new_mac)
