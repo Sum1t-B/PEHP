@@ -4,14 +4,10 @@ import subprocess
 import optparse
 import re
 
-# Uncomment this block before using script
-subprocess.call("date >> ~/Desktop/pehp/comdlog.txt", shell=True)
-subprocess.call("ifconfig >> ~/Desktop/pehp/comdlog.txt", shell=True)
 
 ################################
 ##########
-# Main code from here
-
+# Methods and functions definitions here
 def get_arguments():
     parser = optparse.OptionParser()
     parser.add_option("-i","--interface", dest="interface", help=" Interface to change mac address")
@@ -32,6 +28,13 @@ def change_mac(interface,new_mac):
     # subprocess.call("ifconfig "+ interface+" down", shell=True)
     # subprocess.call("ifconfig "+ interface+" hw ether " + new_mac, shell=True)
     # subprocess.call("ifconfig "+ interface+" up", shell=True)
+
+    # Uncomment this block before using script
+    #### To keep track of mac address changes
+    subprocess.call(["echo", ">>", "~/Desktop/pehp/comdlog.txt"])
+    subprocess.call(["date", ">>", "~/Desktop/pehp/comdlog.txt"])
+    subprocess.call(["echo", interface, get_current_mac(interface), ">>","~/Desktop/pehp/comdlog.txt"])
+    subprocess.call(["echo", ">>", "~/Desktop/pehp/comdlog.txt"])
 
     # Uncomment this block before using script
     ####################
@@ -56,9 +59,14 @@ def get_current_mac(interface):
     else:
         print("[-] Could not read Mac address.")
 
-options = get_arguments()
 
-current_mac = get_current_mac(options.interface)
-print("Current Mac = " + str(current_mac))
-
-change_mac(options.interface, options.new_mac)
+################################
+##########
+# Main Code here
+try:
+    options = get_arguments()
+    current_mac = get_current_mac(options.interface)
+    print("Current Mac = " + str(current_mac))
+    change_mac(options.interface, options.new_mac)
+except :
+    print("No such interface. Enter a valid Interface. Run ifconfig or equivalent command to know about available interfaces.")
