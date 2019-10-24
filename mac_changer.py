@@ -3,6 +3,7 @@
 import subprocess
 import optparse
 import re
+from datetime import datetime  as dt
 
 
 ################################
@@ -31,16 +32,18 @@ def change_mac(interface,new_mac):
 
     # Uncomment this block before using script
     #### To keep track of mac address changes
-    subprocess.call(["echo", ">>", "~/Desktop/pehp/comdlog.txt"])
-    subprocess.call(["date", ">>", "~/Desktop/pehp/comdlog.txt"])
-    subprocess.call(["echo", interface, get_current_mac(interface), ">>","~/Desktop/pehp/comdlog.txt"])
-    subprocess.call(["echo", ">>", "~/Desktop/pehp/comdlog.txt"])
+    log_file = open("./comd_log.txt","a+")
+    L = [dt.now().strftime("%Y-%m-%d %H:%M:%S")+"\n", interface + ": " + str(get_current_mac(interface)), "\n \n"]
+    log_file.writelines(L)
+    log_file.close()
+    # subprocess.call("date >> ~/Desktop/pehp/comdlog.txt")
+    # subprocess.call(["echo", interface, str(get_current_mac(interface)), ">>","~/Desktop/pehp/comdlog.txt"])
 
     # Uncomment this block before using script
     ####################
     # Safer way of executing system commands while using user input
     subprocess.call(["ifconfig", interface,"down"])
-    subprocess.call(["ifconfig", interface, "hw ether", new_mac])
+    subprocess.call(["ifconfig", interface, "hw", "ether", new_mac])
     subprocess.call(["ifconfig", interface, "up"])
 
     # check if mac changed or not
@@ -63,10 +66,10 @@ def get_current_mac(interface):
 ################################
 ##########
 # Main Code here
-try:
-    options = get_arguments()
-    current_mac = get_current_mac(options.interface)
-    print("Current Mac = " + str(current_mac))
-    change_mac(options.interface, options.new_mac)
-except :
-    print("No such interface. Enter a valid Interface. Run ifconfig or equivalent command to know about available interfaces.")
+# try:
+options = get_arguments()
+current_mac = get_current_mac(options.interface)
+print("Current Mac = " + str(current_mac))
+change_mac(options.interface, options.new_mac)
+# except :
+#     print("No such interface. Enter a valid Interface. Run ifconfig or equivalent command to know about available interfaces.")
